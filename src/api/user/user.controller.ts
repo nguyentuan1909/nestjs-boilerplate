@@ -1,6 +1,5 @@
 import { CursorPaginatedDto } from '@/common/dto/cursor-pagination/paginated.dto';
 import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto';
-import { Uuid } from '@/common/types/common.type';
 import { CurrentUser } from '@/decorators/current-user.decorator';
 import { ApiAuth } from '@/decorators/http.decorators';
 import {
@@ -36,8 +35,8 @@ export class UserController {
     summary: 'Get current user',
   })
   @Get('me')
-  async getCurrentUser(@CurrentUser('id') userId: Uuid): Promise<UserResDto> {
-    return await this.userService.findOne(userId);
+  async getCurrentUser(@CurrentUser('id') userId: string): Promise<UserResDto> {
+    return await this.userService.findById(userId);
   }
 
   @Post()
@@ -61,7 +60,7 @@ export class UserController {
   async findAllUsers(
     @Query() reqDto: ListUserReqDto,
   ): Promise<OffsetPaginatedDto<UserResDto>> {
-    return await this.userService.findAll(reqDto);
+    return await this.userService.findMany(reqDto);
   }
 
   @Get('/load-more')
@@ -80,15 +79,15 @@ export class UserController {
   @Get(':id')
   @ApiAuth({ type: UserResDto, summary: 'Find user by id' })
   @ApiParam({ name: 'id', type: 'String' })
-  async findUser(@Param('id', ParseUUIDPipe) id: Uuid): Promise<UserResDto> {
-    return await this.userService.findOne(id);
+  async findUser(@Param('id', ParseUUIDPipe) id: string): Promise<UserResDto> {
+    return await this.userService.findById(id);
   }
 
   @Patch(':id')
   @ApiAuth({ type: UserResDto, summary: 'Update user' })
   @ApiParam({ name: 'id', type: 'String' })
   updateUser(
-    @Param('id', ParseUUIDPipe) id: Uuid,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() reqDto: UpdateUserReqDto,
   ) {
     return this.userService.update(id, reqDto);
@@ -100,7 +99,7 @@ export class UserController {
     errorResponses: [400, 401, 403, 404, 500],
   })
   @ApiParam({ name: 'id', type: 'String' })
-  removeUser(@Param('id', ParseUUIDPipe) id: Uuid) {
+  removeUser(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.remove(id);
   }
 

@@ -11,4 +11,4 @@ if ! echo "$BRANCH" | grep -qE "$REGEX"; then
   exit 1
 fi
 
-pnpm lint-staged
+yarn lint-staged

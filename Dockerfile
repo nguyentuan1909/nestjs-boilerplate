@@ -4,8 +4,8 @@
 
 FROM node:20-alpine AS base
 
-# Install and use pnpm
-RUN npm install -g pnpm
+# Install and use yarn
+RUN npm install -g yarn
 
 #############################
 # BUILD FOR LOCAL DEVELOPMENT
@@ -15,10 +15,10 @@ FROM base As development
 WORKDIR /app
 RUN chown -R node:node /app
 
-COPY --chown=node:node package*.json pnpm-lock.yaml ./
+COPY --chown=node:node package*.json yarn-lock.yaml ./
 
 # Install all dependencies (including devDependencies)
-RUN pnpm install
+RUN yarn install
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -33,19 +33,19 @@ USER node
 FROM base AS builder
 WORKDIR /app
 
-COPY --chown=node:node package*.json pnpm-lock.yaml ./
+COPY --chown=node:node package*.json yarn-lock.yaml ./
 COPY --chown=node:node --from=development /app/node_modules ./node_modules
 COPY --chown=node:node --from=development /app/src ./src
 COPY --chown=node:node --from=development /app/tsconfig.json ./tsconfig.json
 COPY --chown=node:node --from=development /app/tsconfig.build.json ./tsconfig.build.json
 COPY --chown=node:node --from=development /app/nest-cli.json ./nest-cli.json
 
-RUN pnpm build
+RUN yarn build
 
 # Removes unnecessary packages adn re-install only production dependencies
 ENV NODE_ENV production
-RUN pnpm prune --prod
-RUN pnpm install --prod
+RUN yarn prune --prod
+RUN yarn install --prod
 
 USER node
 

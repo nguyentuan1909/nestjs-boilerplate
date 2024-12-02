@@ -12,6 +12,7 @@ import redisConfig from '@/redis/config/redis.config';
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ModuleMetadata } from '@nestjs/common';
+import { CacheStore } from '@nestjs/common/cache';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { redisStore } from 'cache-manager-ioredis-yet';
@@ -24,6 +25,7 @@ import {
 import { LoggerModule } from 'nestjs-pino';
 import path from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { addTransactionalDataSource } from 'typeorm-transactional';
 import loggerFactory from './logger-factory';
 
 function generateModulesSet() {
@@ -43,7 +45,7 @@ function generateModulesSet() {
         throw new Error('Invalid options passed');
       }
 
-      return new DataSource(options).initialize();
+      return addTransactionalDataSource(new DataSource(options));
     },
   });
 
@@ -106,7 +108,7 @@ function generateModulesSet() {
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService<AllConfigType>) => {
       return {
-        store: await redisStore({
+        store: (await redisStore({
           host: configService.getOrThrow('redis.host', {
             infer: true,
           }),
@@ -117,53 +119,23 @@ function generateModulesSet() {
             infer: true,
           }),
           tls: configService.get('redis.tlsEnabled', { infer: true }),
-        }),
+        })) as unknown as CacheStore,
       };
     },
     isGlobal: true,
     inject: [ConfigService],
   });
 
-  const modulesSet = process.env.MODULES_SET || 'monolith';
-
-  switch (modulesSet) {
-    case 'monolith':
-      customModules = [
-        ApiModule,
-        bullModule,
-        BackgroundModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-        MailModule,
-      ];
-      break;
-    case 'api':
-      customModules = [
-        ApiModule,
-        bullModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-        MailModule,
-      ];
-      break;
-    case 'background':
-      customModules = [
-        bullModule,
-        BackgroundModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-      ];
-      break;
-    default:
-      console.error(`Unsupported modules set: ${modulesSet}`);
-      break;
-  }
+  customModules = [
+    ApiModule,
+    bullModule,
+    BackgroundModule,
+    cacheModule,
+    dbModule,
+    i18nModule,
+    loggerModule,
+    MailModule,
+  ];
 
   return imports.concat(customModules);
 }

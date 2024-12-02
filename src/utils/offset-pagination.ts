@@ -1,8 +1,8 @@
 import { OffsetPaginationDto } from '@/common/dto/offset-pagination/offset-pagination.dto';
 import { PageOptionsDto } from '@/common/dto/offset-pagination/page-options.dto';
-import { SelectQueryBuilder } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
-export async function paginate<T>(
+export async function paginate<T extends ObjectLiteral>(
   builder: SelectQueryBuilder<T>,
   pageOptionsDto: PageOptionsDto,
   options?: Partial<{

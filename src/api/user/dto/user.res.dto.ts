@@ -1,6 +1,9 @@
-import { PostResDto } from '@/api/post/dto/post.res.dto';
-import { WrapperType } from '@/common/types/types';
+import { PermissionResDto } from '@/api/access/permissions/dtos/permission.res.dto';
+import { RoleResDto } from '@/api/access/roles/dtos/role.res.dto';
+import { BaseResDto } from '@/api/base/dto/base.res.dto';
+import { UserStatus } from '@/api/user/user-status.enum';
 import {
+  BooleanField,
   ClassField,
   StringField,
   StringFieldOptional,
@@ -8,7 +11,7 @@ import {
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class UserResDto {
+export class UserResDto extends BaseResDto {
   @StringField()
   @Expose()
   id: string;
@@ -16,6 +19,14 @@ export class UserResDto {
   @StringField()
   @Expose()
   username: string;
+
+  @StringField()
+  @Expose()
+  firstName: string;
+
+  @StringField()
+  @Expose()
+  lastName: string;
 
   @StringField()
   @Expose()
@@ -29,9 +40,14 @@ export class UserResDto {
   @Expose()
   image: string;
 
-  @ClassField(() => PostResDto)
-  @Expose()
-  posts?: WrapperType<PostResDto[]>;
+  @BooleanField()
+  isSuperUser: boolean;
+
+  roles: RoleResDto[];
+
+  permissions: PermissionResDto[];
+
+  status: UserStatus;
 
   @ClassField(() => Date)
   @Expose()

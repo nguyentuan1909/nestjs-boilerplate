@@ -13,7 +13,7 @@ services:
       - "3000:3000"
     volumes:
       - ./src:/app/src
-    command: pnpm start:dev
+    command: yarn start:dev
     networks:
       - nestjs-boilerplate-network
 

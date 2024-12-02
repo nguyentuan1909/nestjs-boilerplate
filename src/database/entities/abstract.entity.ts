@@ -11,7 +11,6 @@ import { getOrder, Order } from '../decorators/order.decorator';
 export abstract class AbstractEntity extends BaseEntity {
   @Order(9999)
   @CreateDateColumn({
-    name: 'created_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
@@ -20,7 +19,6 @@ export abstract class AbstractEntity extends BaseEntity {
 
   @Order(9999)
   @Column({
-    name: 'created_by',
     type: 'varchar',
     nullable: false,
   })
@@ -28,7 +26,6 @@ export abstract class AbstractEntity extends BaseEntity {
 
   @Order(9999)
   @UpdateDateColumn({
-    name: 'updated_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
@@ -37,7 +34,6 @@ export abstract class AbstractEntity extends BaseEntity {
 
   @Order(9999)
   @Column({
-    name: 'updated_by',
     type: 'varchar',
     nullable: false,
   })

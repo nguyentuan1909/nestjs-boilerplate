@@ -21,8 +21,8 @@ export class CursorPaginationDto {
 
   constructor(
     totalRecords: number,
-    afterCursor: string,
-    beforeCursor: string,
+    afterCursor: string | null,
+    beforeCursor: string | null,
     pageOptions: PageOptionsDto,
   ) {
     this.limit = pageOptions.limit;

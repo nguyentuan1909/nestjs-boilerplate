@@ -81,7 +81,7 @@ export default registerAs<DatabaseConfig>('database', () => {
   console.info(`Register DatabaseConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
 
-  return {
+  return <DatabaseConfig>{
     type: process.env.DATABASE_TYPE,
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT
